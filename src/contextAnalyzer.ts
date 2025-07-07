@@ -78,13 +78,18 @@ export class ContextAnalyzer {
       screen: this.getCurrentScreen(),
       component: this.getComponentName(element),
       userState: this.getUserState(),
-      appState: this.getAppState()
+      appState: this.getAppState(element)
     };
   }
 
   private getCurrentScreen(): string {
     if (typeof window !== 'undefined') {
-      return window.location.pathname || 'unknown';
+      // Extract page name from pathname or title
+      const pathname = window.location.pathname;
+      if (pathname === '/' || pathname === '') {
+        return 'home';
+      }
+      return pathname.replace(/^\//, '').replace(/\//g, '_') || 'unknown';
     }
     return 'unknown';
   }
@@ -99,7 +104,18 @@ export class ContextAnalyzer {
     return {};
   }
 
-  private getAppState(): Record<string, any> {
-    return {};
+  private getAppState(element?: Element): Record<string, any> {
+    if (!element) return {};
+    
+    return {
+      elementType: element.tagName.toLowerCase(),
+      elementText: element.textContent?.trim() || '',
+      elementId: element.id || '',
+      elementClass: element.className || '',
+      label: element.getAttribute('aria-label') || element.getAttribute('title') || '',
+      href: element.getAttribute('href') || '',
+      type: element.getAttribute('type') || '',
+      value: (element as HTMLInputElement).value || ''
+    };
   }
 }

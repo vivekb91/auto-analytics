@@ -29,16 +29,20 @@ export class EventGenerator {
     const screen = this.sanitizeName(context.screen);
     const component = this.sanitizeName(context.component);
     
-    if (component.includes('button')) {
-      return `${screen}_button_clicked`;
+    // Extract element text/label for better event naming
+    const elementText = context.appState?.elementText || context.appState?.label || '';
+    const buttonLabel = this.sanitizeName(elementText);
+    
+    if (component.includes('button') || context.appState?.elementType === 'button') {
+      return buttonLabel ? `${screen}_${buttonLabel}_click` : `${screen}_button_click`;
     } else if (component.includes('input') || component.includes('textarea')) {
-      return `${screen}_input_changed`;
+      return buttonLabel ? `${screen}_${buttonLabel}_input` : `${screen}_input_focus`;
     } else if (component.includes('form')) {
-      return `${screen}_form_submitted`;
+      return `${screen}_form_submit`;
     } else if (component.includes('link') || component.includes('a')) {
-      return `${screen}_link_clicked`;
+      return buttonLabel ? `${screen}_${buttonLabel}_link` : `${screen}_link_click`;
     } else {
-      return `${screen}_element_interacted`;
+      return buttonLabel ? `${screen}_${buttonLabel}_click` : `${screen}_element_click`;
     }
   }
 

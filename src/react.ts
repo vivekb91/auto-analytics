@@ -44,7 +44,7 @@ export const AutoAnalyticsProvider: React.FC<{
   options: AutoAnalyticsOptions;
 }> = ({ children, options }) => {
   useAutoAnalytics(options);
-  return React.createElement(React.Fragment, null, children);
+  return <>{children}</>;
 };
 
 export const withAutoAnalytics = <P extends object>(

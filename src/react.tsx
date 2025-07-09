@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { AutoAnalytics } from './autoAnalytics';
 import { AutoAnalyticsOptions, AnalyticsEvent } from './types';
+import { AutoTrackerRN } from './autoTrackerRN';
 
 let autoAnalyticsInstance: AutoAnalytics | null = null;
+let autoTrackerInstance: AutoTrackerRN | null = null;
 
 export const useAutoAnalytics = (options: AutoAnalyticsOptions) => {
   const optionsRef = useRef(options);
@@ -15,9 +17,19 @@ export const useAutoAnalytics = (options: AutoAnalyticsOptions) => {
     if (!autoAnalyticsInstance) {
       autoAnalyticsInstance = new AutoAnalytics(optionsRef.current);
       autoAnalyticsInstance.start();
+      
+      // If we're in React Native, also initialize the auto-tracker
+      if (autoAnalyticsInstance['isReactNative'] && !autoTrackerInstance) {
+        autoTrackerInstance = new AutoTrackerRN(autoAnalyticsInstance);
+        autoTrackerInstance.initialize();
+      }
     }
 
     return () => {
+      if (autoTrackerInstance) {
+        autoTrackerInstance.cleanup();
+        autoTrackerInstance = null;
+      }
       if (autoAnalyticsInstance) {
         autoAnalyticsInstance.stop();
         autoAnalyticsInstance = null;

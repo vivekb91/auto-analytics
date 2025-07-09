@@ -5,7 +5,7 @@ export { AnalyticsRouter, createFirebasePlatform, createAmplitudePlatform, creat
 export { ConfigManager } from './configManager';
 
 export { useAutoAnalytics, AutoAnalyticsProvider, withAutoAnalytics } from './react';
-export { useAutoAnalyticsRN, initAutoAnalyticsRN, getAutoAnalyticsInstanceRN, AutoAnalyticsProviderRN } from './reactNative';
+export { useAutoAnalyticsRN, initAutoAnalyticsRN, getAutoAnalyticsInstanceRN, AutoAnalyticsProviderRN, withAutoTrackingRN } from './reactNative';
 
 export type {
   AnalyticsEvent,

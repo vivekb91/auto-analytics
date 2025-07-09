@@ -18,8 +18,8 @@ function MainApp() {
       ],
       rules: [
         {
-          selector: 'button',
-          eventType: 'click',
+          selector: 'TouchableOpacity',
+          eventType: 'press',
           eventName: 'button_clicked',
           properties: { element_type: 'button' }
         }
@@ -31,14 +31,14 @@ function MainApp() {
   });
 
   const handleButtonPress = () => {
-    // This will be auto-tracked by the analytics system
-    console.log('Button pressed - this should be auto-tracked!');
+    // This will be automatically tracked by the analytics system
+    console.log('Button pressed - should be auto-tracked!');
   };
 
   const handleSetUserId = () => {
-    // This will be auto-tracked by the analytics system
     setUserId(`user_${Date.now()}`);
-    console.log('User ID set - this click should be auto-tracked!');
+    // This will be automatically tracked by the analytics system
+    console.log('User ID set - should be auto-tracked!');
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AutoAnalytics } from './autoAnalytics';
 import { AutoAnalyticsOptions } from './types';
 
@@ -49,4 +49,12 @@ export const initAutoAnalyticsRN = (options: AutoAnalyticsOptions) => {
 
 export const getAutoAnalyticsInstanceRN = () => {
   return autoAnalyticsInstance;
+};
+
+export const AutoAnalyticsProviderRN: React.FC<{
+  children: React.ReactNode;
+  options: AutoAnalyticsOptions;
+}> = ({ children, options }) => {
+  useAutoAnalyticsRN(options);
+  return React.createElement(React.Fragment, null, children);
 };

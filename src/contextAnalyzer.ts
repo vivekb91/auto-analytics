@@ -22,6 +22,7 @@ export class ContextAnalyzer {
 
   private setupDOMObserver(): void {
     if (typeof window === 'undefined' || !window.MutationObserver) return;
+    if (typeof document === 'undefined') return;
 
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -44,6 +45,8 @@ export class ContextAnalyzer {
   }
 
   private setupEventListeners(rules: EventRule[]): void {
+    if (typeof document === 'undefined') return;
+    
     const eventTypes = ['click', 'submit', 'change', 'focus', 'blur'];
     
     eventTypes.forEach(eventType => {

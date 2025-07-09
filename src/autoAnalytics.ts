@@ -1,24 +1,35 @@
 import { ContextAnalyzer } from './contextAnalyzer';
+import { ContextAnalyzerRN } from './contextAnalyzerRN';
 import { EventGenerator } from './eventGenerator';
 import { AnalyticsRouter } from './analyticsRouter';
 import { ConfigManager } from './configManager';
 import { AutoAnalyticsOptions, AnalyticsEvent, ContextData } from './types';
 
 export class AutoAnalytics {
-  private contextAnalyzer: ContextAnalyzer;
+  private contextAnalyzer: ContextAnalyzer | ContextAnalyzerRN;
   private eventGenerator: EventGenerator;
   private analyticsRouter: AnalyticsRouter;
   private configManager: ConfigManager;
   private isStarted = false;
+  private isReactNative: boolean;
 
   constructor(options: AutoAnalyticsOptions) {
     this.configManager = new ConfigManager(options.config);
     this.eventGenerator = new EventGenerator();
     this.analyticsRouter = new AnalyticsRouter();
     
-    this.contextAnalyzer = new ContextAnalyzer(
-      (context: ContextData, rule) => this.handleInteraction(context, rule, options)
-    );
+    // Detect if we're in React Native environment
+    this.isReactNative = this.detectReactNative();
+    
+    if (this.isReactNative) {
+      this.contextAnalyzer = new ContextAnalyzerRN(
+        (context: ContextData, rule) => this.handleInteraction(context, rule, options)
+      );
+    } else {
+      this.contextAnalyzer = new ContextAnalyzer(
+        (context: ContextData, rule) => this.handleInteraction(context, rule, options)
+      );
+    }
 
     this.initializePlatforms();
   }
@@ -65,6 +76,30 @@ export class AutoAnalytics {
     platforms.forEach(platform => {
       this.analyticsRouter.addPlatform(platform);
     });
+  }
+
+  private detectReactNative(): boolean {
+    // Check for React Native environment
+    return (
+      typeof navigator !== 'undefined' && 
+      navigator.product === 'ReactNative'
+    ) || (
+      typeof global !== 'undefined' && 
+      (global as any).HermesInternal !== undefined
+    ) || (
+      typeof window === 'undefined' && 
+      typeof document === 'undefined' && 
+      typeof navigator === 'undefined'
+    );
+  }
+
+  /**
+   * Method for manual tracking in React Native
+   */
+  trackRNInteraction(componentName: string, eventType: string, properties?: Record<string, any>): void {
+    if (this.isReactNative && this.contextAnalyzer instanceof ContextAnalyzerRN) {
+      this.contextAnalyzer.trackInteraction(componentName, eventType, properties);
+    }
   }
 
   private async handleInteraction(
